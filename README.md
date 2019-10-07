@@ -1,4 +1,4 @@
-	#CS340/MATH321 Geometrical Modelling and Analysis
+# CS340/MATH321 Geometrical Modelling and Analysis
 	Group Project 2
 
 		#Members: 
