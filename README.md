@@ -3,7 +3,7 @@ Group Project 2
 	
 Use the resources folder for any and all resources (pdf, png, jpeg, etc.) that you wish to use inside the TeX file.
 
-Please dont push pdf files.
+Please dont push pdf files. (Questions.pdf is an exception since it wont be updated :p ) 
 
 		Members: 
 		1. Huda Feroz Ahmed
