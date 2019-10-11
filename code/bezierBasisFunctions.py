@@ -43,9 +43,9 @@ def plotBezierBasisFunctions(type='curve',degree=1):
         plt.ylabel('s')
         plt.show()
         
-plotBezierBasisFunctions(type='curve',degree=3)
+#plotBezierBasisFunctions(type='curve',degree=2)
 
-#plotBezierBasisFunctions(type='surface',degree=1)
+plotBezierBasisFunctions(type='surface',degree=2)
 
         
     
