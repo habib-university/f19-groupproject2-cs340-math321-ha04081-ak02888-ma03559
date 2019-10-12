@@ -5,7 +5,6 @@ import numpy as np
 from scipy import special as sp
 from sympy import *
 from bspline import Bspline
-from functools import partial
 
 def getBezierCurveBasisFunctions(n):
     t = symbols('t')
@@ -17,17 +16,39 @@ def getBezierSurfaceBasisFunctions(n):
     t = symbols('t')
     return [str(int(sp.comb(n,i))*((1-s)**(n-i))*(s**i)*int(sp.comb(n,j))*((1-t)**(n-j))*(t**j)) for i in range(n+1) for j in range(n+1) ]
 
-
-knot_vector = [1,2,3,4,5]
-
-
+'''#BSpline using library
 def plotBsplineBasisFunctions(knot_vector,degree):
     basis = Bspline(knot_vector,degree)
     basis.plot()
+'''
+
+def N_ik(knot,i,k,t):
+    if (k == 1):
+        return np.array(list(map(int,(knot[i] <= t) & (knot[i+1] > t))))
+    else:
+        term1 = (t - knot[i])/(knot[i+k-1]-knot[i])*N_ik(knot,i,k-1,t) if (knot[i+k-1]-knot[i]) != 0 else np.zeros(shape=(t.shape))
+        term2 = (knot[i+k] - t)/(knot[i+k]-knot[i+1])*N_ik(knot,i+1,k-1,t) if (knot[i+k]-knot[i+1]) != 0 else np.zeros(shape=(t.shape))
+        return term1 + term2  
+
+def bSpline(knot, k,t):
+    return [N_ik(knot,i,k,t) for i in range(len(knot)-k)]
+            
+def plotBsplineBasisFunctions(knot, k):
+    t = np.linspace(knot[0],knot[-1],1000)
+    funcs = bSpline(knot, k,t)
+    i = 0
+    for func in  funcs:
+        plt.plot(t,func,label = "N_" + str(i) + "," + str(k))
+        i += 1
+    plt.title("BSpline basis functions for k =  " + str(k) + " and t = " + str(knot))
+    plt.xlabel('t')
+    plt.ylabel('y axis')
+    plt.grid(alpha=.4,linestyle='--')
+    plt.legend()
+    plt.show()
     
-#plotBsplineBasisFunctions(knot_vector,1)         
 def plotBezierBasisFunctions(type='curve',degree=1):
-    t = np.arange(0,1+0.01,0.01)
+    t = np.linspace(0,1,1000)
     if (type == 'curve'):
         basisFunctions = getBezierCurveBasisFunctions(degree)
         for func in basisFunctions:
@@ -39,7 +60,7 @@ def plotBezierBasisFunctions(type='curve',degree=1):
         plt.legend()
         plt.show()
     if (type == 'surface'):
-        s = np.arange(0,1+0.01,0.01)
+        t = np.linspace(0,1,1000)
         T, S = np.meshgrid(t, s)
         fig = plt.figure()
         ax = Axes3D(fig)
@@ -55,16 +76,13 @@ def plotBezierBasisFunctions(type='curve',degree=1):
         plt.ylabel('s')
         plt.show()
         
-#plotBezierBasisFunctions(type='curve',degree=1)
-
-#plotBezierBasisFunctions(type='surface',degree=1)
 
 def plotBezierCurves(controlPoints,degree):
     if (len(controlPoints) != degree +1):
         raise ValueError('The number of control points should be 1 more than the degree')
     controlPoints = np.array(controlPoints)
     cpX , cpY = controlPoints[:,0] , controlPoints[:,1]
-    t = np.arange(0,1+0.01,0.01)
+    t = np.linspace(0,1,1000)
     basisFunctions = getBezierCurveBasisFunctions(degree)
     curve, i = 0,0
     for func in basisFunctions:
@@ -84,5 +102,9 @@ def plotBezierCurves(controlPoints,degree):
     plt.legend()
     plt.show()
 
-d = {2: [[0,0],[0.5,1],[1,0]], 1:[[0,0],[0.5,1]],3:[[0,0],[0.5,1],[0.5,0],[1,1]]}   
-plotBezierCurves(d[3],3)    
+knot_vector = [0,0,0,1,1,1,2,2,3,3,4,5,5]
+plotBsplineBasisFunctions(knot_vector,4)         
+#plotBezierBasisFunctions(type='curve',degree=1)
+#plotBezierBasisFunctions(type='surface',degree=1)
+d = {2: [[0,0],[1,2],[2,0]], 1:[[0,0],[0.5,1]],3:[[0,0],[0.5,1],[0.5,0],[1,1]]}   
+#plotBezierCurves(d[2],2)    
