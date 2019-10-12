@@ -53,8 +53,10 @@ def N_ik(knot,i,k,t):
         N_i,k for a given knot vector
     """
     if (k == 1):
+        #base condition
         return np.array(list(map(int,(knot[i] <= t) & (knot[i+1] > t))))
     else:
+        #checking if denominators are zero to avoid division by zero error
         term1 = (t - knot[i])/(knot[i+k-1]-knot[i])*N_ik(knot,i,k-1,t) if (knot[i+k-1]-knot[i]) != 0 else np.zeros(shape=(t.shape))
         term2 = (knot[i+k] - t)/(knot[i+k]-knot[i+1])*N_ik(knot,i+1,k-1,t) if (knot[i+k]-knot[i+1]) != 0 else np.zeros(shape=(t.shape))
         return term1 + term2  
