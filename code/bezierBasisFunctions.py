@@ -88,7 +88,6 @@ def plotBsplineBasisFunctions(knot, k):
         i += 1
     plt.title("BSpline basis functions for k =  " + str(k) + " and t = " + str(knot))
     plt.xlabel('t')
-    plt.ylabel('y axis')
     plt.grid(alpha=.4,linestyle='--')
     plt.legend()
     plt.show()
@@ -107,14 +106,13 @@ def plotBezierBasisFunctions(type='curve',degree=1):
         basisFunctions = getBezierCurveBasisFunctions(degree)
         for func in basisFunctions:
             plt.plot(t,eval(func, {'t':t}),label = func)
-        plt.title("Bezier curves for degree " + str(degree))
+        plt.title("Bezier basis functions over unit interval for degree " + str(degree))
         plt.xlabel('t')
-        plt.ylabel('y axis')
         plt.grid(alpha=.4,linestyle='--')
         plt.legend()
         plt.show()
     if (type == 'surface'):
-        t = np.linspace(0,1,1000)
+        s = np.linspace(0,1,1000)
         T, S = np.meshgrid(t, s)
         fig = plt.figure()
         ax = Axes3D(fig)
@@ -125,7 +123,7 @@ def plotBezierBasisFunctions(type='curve',degree=1):
             c._edgecolors2d=c._edgecolors3d
             #break;
         ax.legend()
-        plt.title("Bezier surfaces for degree " + str(degree))
+        plt.title("Bezier basis functions over unit square for degree " + str(degree))
         plt.xlabel('t')
         plt.ylabel('s')
         plt.show()
@@ -155,8 +153,8 @@ def plotBezierCurves(controlPoints,degree):
     for i in range(len(cpX)):
         plt.annotate("P"+str(i), (cpX[i],cpY[i]), textcoords="offset points", xytext=(0,10), ha='center') 
     plt.title("Bezier curves for degree " + str(degree))
-    plt.xlabel('t')
-    plt.ylabel('y axis')
+    plt.xlabel('x-axis')
+    plt.ylabel('y-axis')
     plt.xlim([min(cpX) - 0.3, max(cpX) + 0.3])
     plt.ylim([min(cpY) - 0.3, max(cpY) + 0.3])
     plt.grid(alpha=.4,linestyle='--')
@@ -173,10 +171,10 @@ def cubicBezierCurvesJoinedWithContinuity(continuity = 'C-1', cpP=[[0,0],[0.5,1]
     curveP, curveQ, i = 0,0,0
     if (continuity == 'C0'):
         cpQ[0] = cpP[3]
-    if (continuity == 'C1'):
+    elif (continuity == 'C1'):
         cpQ[0] = cpP[3]
         cpQ[1] = 2*cpP[3] - cpP[2]
-    if (continuity == 'C2'):
+    elif (continuity == 'C2'):
         cpQ[0] = cpP[3]
         cpQ[1] = 2*cpP[3] - cpP[2]
         cpQ[2] = cpP[1] - 4*cpP[2] + 4*cpP[3]
@@ -194,19 +192,19 @@ def cubicBezierCurvesJoinedWithContinuity(continuity = 'C-1', cpP=[[0,0],[0.5,1]
         plt.annotate("P"+str(i), (cpPX[i],cpPY[i]), textcoords="offset points", xytext=(0,10), ha='center')
         plt.annotate("Q"+str(i), (cpQX[i],cpQY[i]), textcoords="offset points", xytext=(0,-10), ha='center')
     plt.title("Cubic Bezier curves with " + continuity + " continuity")
-    plt.xlabel('t')
-    plt.ylabel('y axis')
+    plt.xlabel('x-axis')
+    plt.ylabel('y-axis')
     plt.grid(alpha=.4,linestyle='--')
     plt.legend()
     plt.show()
     
 
 
-knot_vector = [0,0,0,1,1,1,2,2,3,3,4,5,5]
-#plotBsplineBasisFunctions(knot_vector,4)         
+knot_vector = [0,1,2,3,4,5,6]
+#plotBsplineBasisFunctions(knot_vector,5)         
 #plotBezierBasisFunctions(type='curve',degree=2)
 #plotBezierBasisFunctions(type='surface',degree=1)
-d = {2: [[1,2],[0,0],[2,0]], 1:[[0,0],[0.5,1]],3:[[0,0],[0.5,1],[0.5,0],[1,1]]}   
+d = {2: [[1,2],[0,0],[2,0]], 1:[[0,0],[0.5,1]],3:[[0,0],[0.5,1],[0.5,0],[1,1]],4:[[0,0],[1,0],[1,1],[0,1],[0.5,2]]}   
 #plotBezierCurves(d[2],2)    
 #pass_(d[2],3)    
 cubicBezierCurvesJoinedWithContinuity(continuity = 'C2',cpP = [[0,0],[0.5,1],[0.5,0],[1,1]],cpQ = [[1.5,1.5],[2,2.5],[2,1.5],[2.5,2.5]])
