@@ -163,10 +163,50 @@ def plotBezierCurves(controlPoints,degree):
     plt.legend()
     plt.show()
 
+def cubicBezierCurvesJoinedWithContinuity(continuity = 'C-1', cpP=[[0,0],[0.5,1],[0.5,0],[1,1]], cpQ=[[1.5,1.5],[2,2.5],[2,1.5],[2.5,2.5]]):
+    cpP = np.array(cpP)
+    cpQ = np.array(cpQ)
+    cpPX , cpPY = cpP[:,0] , cpP[:,1]
+    cpQX , cpQY = cpQ[:,0] , cpQ[:,1]
+    t = np.linspace(0,1,1000)
+    basisFunctions = getBezierCurveBasisFunctions(3)
+    curveP, curveQ, i = 0,0,0
+    if (continuity == 'C0'):
+        cpQ[0] = cpP[3]
+    if (continuity == 'C1'):
+        cpQ[0] = cpP[3]
+        cpQ[1] = 2*cpP[3] - cpP[2]
+    if (continuity == 'C2'):
+        cpQ[0] = cpP[3]
+        cpQ[1] = 2*cpP[3] - cpP[2]
+        cpQ[2] = cpP[1] - 4*cpP[2] + 4*cpP[3]
+    for func in basisFunctions:
+        curveP += np.outer(eval(func, {'t':t}),cpP[i])
+        curveQ += np.outer(eval(func, {'t':t}),cpQ[i])
+        i += 1
+    curvePX , curvePY = curveP[:,0] , curveP[:,1]
+    curveQX , curveQY = curveQ[:,0] , curveQ[:,1]
+    plt.plot(curvePX,curvePY, label = "Bezier Curve P(t)")
+    plt.plot(curveQX,curveQY, label = "Bezier Curve Q(t)")
+    plt.plot(cpPX,cpPY,'--og' , label = "Control Points for P(t)")
+    plt.plot(cpQX,cpQY,'--or' , label = "Control Points Q(t)")
+    for i in range(len(cpPX)):
+        plt.annotate("P"+str(i), (cpPX[i],cpPY[i]), textcoords="offset points", xytext=(0,10), ha='center')
+        plt.annotate("Q"+str(i), (cpQX[i],cpQY[i]), textcoords="offset points", xytext=(0,-10), ha='center')
+    plt.title("Cubic Bezier curves with " + continuity + " continuity")
+    plt.xlabel('t')
+    plt.ylabel('y axis')
+    plt.grid(alpha=.4,linestyle='--')
+    plt.legend()
+    plt.show()
+    
+
 
 knot_vector = [0,0,0,1,1,1,2,2,3,3,4,5,5]
 #plotBsplineBasisFunctions(knot_vector,4)         
-#plotBezierBasisFunctions(type='curve',degree=1)
+#plotBezierBasisFunctions(type='curve',degree=2)
 #plotBezierBasisFunctions(type='surface',degree=1)
-d = {2: [[0,0],[1,2],[2,0]], 1:[[0,0],[0.5,1]],3:[[0,0],[0.5,1],[0.5,0],[1,1]]}   
+d = {2: [[1,2],[0,0],[2,0]], 1:[[0,0],[0.5,1]],3:[[0,0],[0.5,1],[0.5,0],[1,1]]}   
 #plotBezierCurves(d[2],2)    
+#pass_(d[2],3)    
+cubicBezierCurvesJoinedWithContinuity(continuity = 'C2',cpP = [[0,0],[0.5,1],[0.5,0],[1,1]],cpQ = [[1.5,1.5],[2,2.5],[2,1.5],[2.5,2.5]])
