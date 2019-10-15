@@ -198,7 +198,42 @@ def cubicBezierCurvesJoinedWithContinuity(continuity = 'C-1', cpP=[[0,0],[0.5,1]
     plt.legend()
     plt.show()
     
-
+def newBezierBasisToPassThroughCP(controlPoints,degree):
+    """
+    Paramters:
+        controlPoints : A 2D list of control points (example : [[x1,y1],[x2,y2], ... , [xn,yn]]
+        degree : degree of bezier basis functions. This function only accepts degrees which satisfy the inequality 2 <= degree <= 3
+    Output:
+        Plots the bezier curve controlled by a control polygon such that the curve passes through these points, and also draws the control points
+    """
+    if (len(controlPoints) != degree +1):
+        raise ValueError('The number of control points should be 1 more than the degree')
+    if (degree > 3 or degree < 2 ):
+        raise ValueError('This function only works for quadratic and cubic bezier curves.')
+    controlPoints = np.array(controlPoints)
+    cpX , cpY = controlPoints[:,0] , controlPoints[:,1]
+    t = np.linspace(0,1,1000)
+    if (degree == 2):
+        basisFunctions = ['2*(1-t)*(0.5-t)','4*(1-t)*t','-2*t*(0.5-t)']
+    elif (degree == 3):
+        basisFunctions = ['(9/2)*(1-t)*((1/3)-t)*((2/3)-t)','(27/2)*t*(1-t)*((2/3)-t)','(-27/2)*t*(1-t)*((1/3)-t)','(9/2)*t*((1/3)-t)*((2/3)-t)']
+    curve, i = 0,0
+    for func in basisFunctions:
+        curve += np.outer(eval(func, {'t':t}),controlPoints[i])
+        i += 1
+    curveX , curveY = curve[:,0] , curve[:,1]
+    plt.plot(curveX,curveY, label = "Bezier Curve")
+    plt.plot(cpX,cpY,'-og' , label = "Control Points")
+    for i in range(len(cpX)):
+        plt.annotate("P"+str(i), (cpX[i],cpY[i]), textcoords="offset points", xytext=(0,10), ha='center') 
+    plt.title("Bezier curves for degree " + str(degree))
+    plt.xlabel('x-axis')
+    plt.ylabel('y-axis')
+    plt.xlim([min(cpX) - 0.3, max(cpX) + 0.3])
+    plt.ylim([min(cpY) - 0.3, max(cpY) + 0.3])
+    plt.grid(alpha=.4,linestyle='--')
+    plt.legend()
+    plt.show()
 
 knot_vector = [0,1,2,3,4,5,6]
 #plotBsplineBasisFunctions(knot_vector,5)         
@@ -206,5 +241,5 @@ knot_vector = [0,1,2,3,4,5,6]
 #plotBezierBasisFunctions(type='surface',degree=1)
 d = {2: [[1,2],[0,0],[2,0]], 1:[[0,0],[0.5,1]],3:[[0,0],[0.5,1],[0.5,0],[1,1]],4:[[0,0],[1,0],[1,1],[0,1],[0.5,2]]}   
 #plotBezierCurves(d[2],2)    
-#pass_(d[2],3)    
-cubicBezierCurvesJoinedWithContinuity(continuity = 'C2',cpP = [[0,0],[0.5,1],[0.5,0],[1,1]],cpQ = [[1.5,1.5],[2,2.5],[2,1.5],[2.5,2.5]])
+newBezierBasisToPassThroughCP(d[2],2)    
+#cubicBezierCurvesJoinedWithContinuity(continuity = 'C2',cpP = [[0,0],[0.5,1],[0.5,0],[1,1]],cpQ = [[1.5,1.5],[2,2.5],[2,1.5],[2.5,2.5]])
