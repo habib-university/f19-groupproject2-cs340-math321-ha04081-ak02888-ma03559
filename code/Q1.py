@@ -327,6 +327,35 @@ def newBezierSurfacesThroughCP(controlPoints,degree):
     plt.ylabel('s')
     plt.show()
 
+def parseFile(filename):
+    file = open(filename,"r")
+    data = file.readlines()
+    nv,nf = [int(s) for s in data[0].split() if s.isdigit()]
+    vertices = np.array([list(map(float, vertex.split())) for n,vertex in enumerate(data[1:nv+1])])
+    faces = {n:list(map(int, face.split())) for n,face in enumerate(data[1+nv:])}
+    return vertices,faces
+
+def circle(filename):
+    vertices,faces = parseFile(filename)
+    vX , vY = vertices[:,0] , vertices[:,1]
+    t = np.linspace(0,1,1000)
+    basisFunctions = getBezierCurveBasisFunctions(2)
+    for nFace,lFace in faces.items():
+        curve,i = 0, 0
+        for func in basisFunctions:
+            curve += np.outer(eval(func, {'t':t}),vertices[lFace[i]])
+            i += 1
+        curveX , curveY = curve[:,0] , curve[:,1]
+        plt.plot(curveX,curveY,color='blue')
+    
+    plt.plot(vX,vY,'--og' , label = "Control Points")
+    plt.title("Bezier curves for 2")
+    plt.xlabel('x-axis')
+    plt.ylabel('y-axis')
+    plt.grid(alpha=.4,linestyle='--')
+    plt.legend()
+    plt.show()
+
 knot_vector = [0,1,2,3,4,5,6]
 #plotBsplineBasisFunctions(knot_vector,5)         
 #plotBezierBasisFunctions(type='curve',degree=2)
@@ -337,5 +366,6 @@ d = {2: [[1,2],[0,0],[2,0]], 1:[[0,0],[0.5,1]],3:[[0,0],[0.5,1],[0.5,0],[1,1]],4
 p = [[0,0,10],[3,0,-10],[6,0,0],[0,3,12],[3,3,0],[6,3,0],[0,6,0],[3,6,4],[6,6,0]]
 q = [[0,0,0],[3,0,0],[0,3,0],[3,3,0]]
 #plotBezierSurfaces(p,2)
-newBezierSurfacesThroughCP(p,2)
+#newBezierSurfacesThroughCP(p,2)
 #cubicBezierCurvesJoinedWithContinuity(continuity = 'C2',cpP = [[0,0],[0.5,1],[0.5,0],[1,1]],cpQ = [[1.5,1.5],[2,2.5],[2,1.5],[2.5,2.5]])
+circle("../resources/circle.txt")
