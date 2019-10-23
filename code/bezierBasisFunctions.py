@@ -1,10 +1,11 @@
 # Import our modules that we are using
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import bezier
 import numpy as np
 from scipy import special as sp
 from sympy import *
-from bspline import Bspline
+#from bspline import Bspline
 
 def getBezierCurveBasisFunctions(n):
     """
@@ -161,6 +162,28 @@ def plotBezierCurves(controlPoints,degree):
     plt.legend()
     plt.show()
 
+def plotBezierSurfacesTensorProduct(controlPoints,degree):
+    """
+    Paramters:
+        controlPoints : A 3D list of control points (example : [[x1,y1,z1],[x2,y2,z2], ... , [xn,yn,zn]]
+        degree : degree of bezier basis functions, degree = 1 for linear and so on
+    Output:
+        Plots the bezier patch and also draws the control points
+    """
+    if (len(controlPoints[0]) != (degree +1)**2 or len(controlPoints[1]) != (degree +1)**2 or len(controlPoints[2]) != (degree +1)**2):
+        #print(len(controlPoints[0]),len(controlPoints[1]),len(controlPoints[2]),(degree +1)**2)
+        raise ValueError('The number of control points should be 1 more than the degree')
+    nodes = np.asfortranarray(controlPoints)
+    surface = bezier.Surface(nodes, degree=2)
+    t = np.linspace(0, 1, 1000)
+    s = np.linspace(0, 1, 1000)
+    array = []
+    for i in s:
+        for j in t:
+            point = surface.evaluate_cartesian(s, t)
+            array.append(point)
+    #print(surface)
+    #surface.plot(2)
 def cubicBezierCurvesJoinedWithContinuity(continuity = 'C-1', cpP=[[0,0],[0.5,1],[0.5,0],[1,1]], cpQ=[[1.5,1.5],[2,2.5],[2,1.5],[2.5,2.5]]):
     cpP = np.array(cpP)
     cpQ = np.array(cpQ)
@@ -239,7 +262,9 @@ knot_vector = [0,1,2,3,4,5,6]
 #plotBsplineBasisFunctions(knot_vector,5)         
 #plotBezierBasisFunctions(type='curve',degree=2)
 #plotBezierBasisFunctions(type='surface',degree=1)
-d = {2: [[1,2],[0,0],[2,0]], 1:[[0,0],[0.5,1]],3:[[0,0],[0.5,1],[0.5,0],[1,1]],4:[[0,0],[1,0],[1,1],[0,1],[0.5,2]]}   
-#plotBezierCurves(d[2],2)    
-newBezierBasisToPassThroughCP(d[2],2)    
+d = {2: [[1,2,0],[0,0,1],[2,0,2],[1,2,0]], 1:[[0,0],[0.5,1]],3:[[0,0],[0.5,1],[0.5,0],[1,1]],4:[[0,0],[1,0],[1,1],[0,1],[0.5,2]]}
+tp =[[0.0, 0.5,0.75, 1.0 , 0.125, 0.375, 0.25, 0.55, 0.8],[0.0, 0.0, 0.25, 0.5  , 0.75, 0.375, 1.0, 0.8, 0.4 ],[0.0, 0.125, 0.25, 0.375, 0.5, 1.0, 0.75, 0.875, 1.0 ]]
+plotBezierSurfacesTensorProduct(tp,2)
+#plotBezierCurves(d[2],2)
+#newBezierBasisToPassThroughCP(d[2],2)
 #cubicBezierCurvesJoinedWithContinuity(continuity = 'C2',cpP = [[0,0],[0.5,1],[0.5,0],[1,1]],cpQ = [[1.5,1.5],[2,2.5],[2,1.5],[2.5,2.5]])
