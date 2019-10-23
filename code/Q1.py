@@ -273,6 +273,60 @@ def plotBezierSurfaces(controlPoints,degree):
     plt.ylabel('s')
     plt.show()
 
+def newBezierSurfacesThroughCP(controlPoints,degree):
+    """
+    Paramters:
+        controlPoints : A 2D list of control points (example : [[x1,y1],[x2,y2], ... , [xn,yn]]
+        degree : degree of bezier basis functions. This function only accepts degrees which satisfy the inequality 2 <= degree <= 3
+    Output:
+        Plots the bezier curve controlled by a control polygon such that the curve passes through these points, and also draws the control points
+    """
+    if (len(controlPoints) != (degree +1)**2):
+        raise ValueError('The number of control points should be (degree + 1)**2')
+    if (degree > 3 or degree < 2 ):
+        raise ValueError('This function only works for quadratic and cubic bezier curves.')
+    controlPoints = np.array(controlPoints)
+    cpX , cpY, cpZ = controlPoints[:,0] , controlPoints[:,1] , controlPoints[:,2]
+    t = np.linspace(0,1,10)
+    s = np.linspace(0,1,10)
+    T, S = np.meshgrid(t, s)
+    if (degree == 2):
+        basisFunctions = ['2*(1-s)*(0.5-s)*2*(1-t)*(0.5-t)','2*(1-s)*(0.5-s)*4*(1-t)*t','2*(1-s)*(0.5-s)*(-2)*t*(0.5-t)',
+                          '4*(1-s)*s*2*(1-t)*(0.5-t)','4*(1-s)*s*4*(1-t)*t','4*(1-s)*s*(-2)*t*(0.5-t)',
+                          '(-2)*s*(0.5-s)*2*(1-t)*(0.5-t)','(-2)*s*(0.5-s)*4*(1-t)*t','(-2)*s*(0.5-s)*(-2)*t*(0.5-t)'
+                          ]
+    elif (degree == 3):
+        basisFunctions = ['(9/2)*(1-s)*((1/3)-s)*((2/3)-s)*(9/2)*(1-t)*((1/3)-t)*((2/3)-t)','(9/2)*(1-s)*((1/3)-s)*((2/3)-s)*(27/2)*t*(1-t)*((2/3)-t)',
+                          '(9/2)*(1-s)*((1/3)-s)*((2/3)-s)*(-27/2)*t*(1-t)*((1/3)-t)','(9/2)*(1-s)*((1/3)-s)*((2/3)-s)*(9/2)*t*((1/3)-t)*((2/3)-t)',
+                          
+                          '(27/2)*s*(1-s)*((2/3)-s)*(9/2)*(1-t)*((1/3)-t)*((2/3)-t)','(27/2)*s*(1-s)*((2/3)-s)*(27/2)*t*(1-t)*((2/3)-t)',
+                          '(27/2)*s*(1-s)*((2/3)-s)*(-27/2)*t*(1-t)*((1/3)-t)','(27/2)*s*(1-s)*((2/3)-s)*(9/2)*t*((1/3)-t)*((2/3)-t)'
+
+                          '(-27/2)*s*(1-s)*((1/3)-s)*(9/2)*(1-t)*((1/3)-t)*((2/3)-t)','(-27/2)*s*(1-s)*((1/3)-s)*(27/2)*t*(1-t)*((2/3)-t)',
+                          '(-27/2)*s*(1-s)*((1/3)-s)*(-27/2)*t*(1-t)*((1/3)-t)','(-27/2)*s*(1-s)*((1/3)-s)*(9/2)*t*((1/3)-t)*((2/3)-t)'
+
+                          '(9/2)*s*((1/3)-s)*((2/3)-s)*(9/2)*(1-t)*((1/3)-t)*((2/3)-t)','(9/2)*s*((1/3)-s)*((2/3)-s)*(27/2)*t*(1-t)*((2/3)-t)',
+                          '(9/2)*s*((1/3)-s)*((2/3)-s)*(-27/2)*t*(1-t)*((1/3)-t)','(9/2)*s*((1/3)-s)*((2/3)-s)*(9/2)*t*((1/3)-t)*((2/3)-t)'
+                          ]
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    curve, i = 0,0
+    for func in basisFunctions:
+        curve += np.outer(eval(func,{'t':T,'s':S}),controlPoints[i])
+        i += 1
+    curveX , curveY , curveZ = curve[:,0] , curve[:,1] , curve[:,2]
+    c = ax.plot_trisurf(curveX,curveY, curveZ, label = "Bezier Surface")
+    c._facecolors2d=c._facecolors3d
+    c._edgecolors2d=c._edgecolors3d
+    ax.plot(cpX,cpY,cpZ,'--og' , label = "Control Points")
+    for i in range(len(cpX)):
+        ax.text(cpX[i],cpY[i],cpZ[i],"P"+str(i),horizontalalignment='left',verticalalignment='top') 
+    plt.title("Bezier surface for degree " + str(degree))
+    ax.legend()
+    plt.xlabel('t')
+    plt.ylabel('s')
+    plt.show()
+
 knot_vector = [0,1,2,3,4,5,6]
 #plotBsplineBasisFunctions(knot_vector,5)         
 #plotBezierBasisFunctions(type='curve',degree=2)
@@ -280,7 +334,8 @@ knot_vector = [0,1,2,3,4,5,6]
 d = {2: [[1,2],[0,0],[2,0]], 1:[[0,0],[0.5,1]],3:[[0,0],[0.5,1],[0.5,0],[1,1]],4:[[0,0],[1,0],[1,1],[0,1],[0.5,2]]}   
 #plotBezierCurves(d[2],2)    
 #newBezierBasisToPassThroughCP(d[2],2)
-p = [[0,0,10],[3,0,0],[6,0,0],[0,3,0],[3,3,0],[6,3,0],[0,6,0],[3,6,0],[6,6,0]]
+p = [[0,0,10],[3,0,-10],[6,0,0],[0,3,12],[3,3,0],[6,3,0],[0,6,0],[3,6,4],[6,6,0]]
 q = [[0,0,0],[3,0,0],[0,3,0],[3,3,0]]
-plotBezierSurfaces(p,2)
+#plotBezierSurfaces(p,2)
+newBezierSurfacesThroughCP(p,2)
 #cubicBezierCurvesJoinedWithContinuity(continuity = 'C2',cpP = [[0,0],[0.5,1],[0.5,0],[1,1]],cpQ = [[1.5,1.5],[2,2.5],[2,1.5],[2.5,2.5]])
