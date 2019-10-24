@@ -343,10 +343,6 @@ def newBezierSurfacesThroughCP(controlPoints, degree):
     c._facecolors2d = c._facecolors3d
     c._edgecolors2d = c._edgecolors3d
     ax.plot(cpX, cpY, cpZ, '--og', label="Control Points")
-    for i in range(len(cpX)):
-        ax.text(cpX[i], cpY[i], cpZ[i], "P" + str(i), horizontalalignment='left', verticalalignment='top')
-    plt.title("Bezier surface for degree " + str(degree))
-    ax.legend()
     plt.xlabel('t')
     plt.ylabel('s')
     plt.show()
@@ -354,6 +350,7 @@ def newBezierSurfacesThroughCP(controlPoints, degree):
 
 def cubicBezierSurfacesJoinedWithContinuity(continuity='C-1', cpP=[[0, 0,0], [0.5, 1,1], [0.5, 0,3], [1, 1,5]],
                                           cpQ=[[1.5, 1.5,6], [2, 2.5,4], [2, 1.5,3], [2.5, 2.5,0.5]]):
+    degree = 2
     cpP = np.array(cpP)
     cpQ = np.array(cpQ)
 
@@ -363,23 +360,26 @@ def cubicBezierSurfacesJoinedWithContinuity(continuity='C-1', cpP=[[0, 0,0], [0.
     t = np.linspace(0, 1, 10)
     s = np.linspace(0, 1, 10)
     T, S = np.meshgrid(t, s)
-    basisFunctions = getBezierSurfaceBasisFunctions(3)
-
+    basisFunctions = getBezierSurfaceBasisFunctions(degree)
+    fig = plt.figure()
+    ax = Axes3D(fig)
     curveP, curveQ, i = 0, 0, 0
     if (continuity == 'C0'):
-        cpQ[0] = cpP[3]
+        cpQ[0] = cpP[2]
+        cpQ[3] = cpP[5]
+        cpQ[6] = cpP[8]
     elif (continuity == 'C1'):
         cpQ[0] = cpP[3]
         cpQ[1] = 2 * cpP[3] - cpP[2]
     for func in basisFunctions:
-        curve += np.outer(eval(func, {'t': T, 's': S}), controlPoints[i])
+        #curve += np.outer(eval(func, {'t': T, 's': S}), controlPoints[i])
         curveP += np.outer(eval(func, {'t':T,'s':S}), cpP[i])
         curveQ += np.outer(eval(func, {'t':T,'s':S}), cpQ[i])
         i += 1
     curvePX, curvePY, curvePZ = curveP[:, 0], curveP[:, 1], curveP[:, 1]
     curveQX, curveQY, curveQZ = curveQ[:, 0], curveQ[:, 1], curveQ[:, 1]
     p = ax.plot_trisurf(curvePX, curvePY, curvePZ, label="Bezier Patch P")
-    q = ax.plot_trisurf(curvePX, curvePY, curvePZ, label="Bezier Patch Q")
+    q = ax.plot_trisurf(curveQX, curveQY, curveQZ, label="Bezier Patch Q")
     p._facecolors2d = p._facecolors3d
     p._edgecolors2d = p._edgecolors3d
     q._facecolors2d = q._facecolors3d
@@ -394,18 +394,6 @@ def cubicBezierSurfacesJoinedWithContinuity(continuity='C-1', cpP=[[0, 0,0], [0.
     ax.legend()
     plt.xlabel('t')
     plt.ylabel('s')
-    # plt.plot(curvePX, curvePY, label="Bezier Curve P(t)")
-    # plt.plot(curveQX, curveQY, label="Bezier Curve Q(t)")
-    # plt.plot(cpPX, cpPY, '--og', label="Control Points for P(t)")
-    # plt.plot(cpQX, cpQY, '--or', label="Control Points Q(t)")
-    # for i in range(len(cpPX)):
-    #     plt.annotate("P" + str(i), (cpPX[i], cpPY[i]), textcoords="offset points", xytext=(0, 10), ha='center')
-    #     plt.annotate("Q" + str(i), (cpQX[i], cpQY[i]), textcoords="offset points", xytext=(0, -10), ha='center')
-    # plt.title("Cubic Bezier curves with " + continuity + " continuity")
-    # plt.xlabel('x-axis')
-    # plt.ylabel('y-axis')
-    # plt.grid(alpha=.4, linestyle='--')
-    # plt.legend()
     plt.show()
 
 
@@ -425,4 +413,6 @@ p = [[0, 0, 10], [3, 0, -10], [6, 0, 0], [0, 3, 12], [3, 3, 0], [6, 3, 0], [0, 6
 q = [[0, 0, 0], [3, 0, 0], [0, 3, 0], [3, 3, 0]]
 #plotBezierSurfaces(p,2)
 #newBezierSurfacesThroughCP(p, 2)
-#cubicBezierCurvesJoinedWithContinuity(continuity = 'C2',cpP = [[0,0],[0.5,1],[0.5,0],[1,1]],cpQ = [[1.5,1.5],[2,2.5],[2,1.5],[2.5,2.5]])jnb
+#cubicBezierCurvesJoinedWithContinuity(continuity = 'C2',cpP = [[0,0],[0.5,1],[0.5,0],[1,1]],cpQ = [[1.5,1.5],[2,2.5],[2,1.5],[2.5,2.5]])
+cubicBezierSurfacesJoinedWithContinuity(continuity='C0', cpP=[[0, 0,0], [0.5, 1,1], [0.5, 0,3], [1, 1,5], [0, 0, 10], [3, 0, -10], [6, 0, 0], [0, 3, 12],[4,2,1]],
+                                        cpQ=[[1.5, 1.5,6], [2, 2.5,4], [2, 1.5,3], [2.5, 2.5,0.5],[3, 3, 0], [6, 3, 0], [0, 6, 0], [3, 6, 4], [6, 6, 0]])
