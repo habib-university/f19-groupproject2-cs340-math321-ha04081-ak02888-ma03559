@@ -64,6 +64,8 @@ def circle():
         f = [points["P"+i] for i in mesh.readline().strip().split()] 
         AllFaces["F"+str(j)] = Face(f)
     
+    close(mesh)
+
     #Line Mesh
     x_t = []
     y_t = []
