@@ -71,6 +71,8 @@ def sphere():
 		f = [f[0], f[4], f[1], f[5], f[2], f[6], f[3], f[7], f[0]] #rearranging according to figure 4 in question paper 
 		AllFaces["F"+str(j)] = Face(f)
 
+	mesh.close()
+
 	#Surface Mesh
 	x_st, y_st, z_st = [], [], []
 
@@ -97,7 +99,7 @@ def sphere():
 	tdPlot = plt.figure()
 	axs = tdPlot.add_subplot(111, projection='3d')
 
-	axs.plot_wireframe(np.array([x_a]), np.array([y_a]), np.array([z_a]), color='red') #original wireframs
+	axs.plot_wireframe(np.array([x_a]), np.array([y_a]), np.array([z_a]), color='red', label='control points') #original wireframs
 	axs.plot_wireframe(np.array(x_st), np.array(y_st), np.array([z_st]),  color='orange', linewidth=GolRatio, antialiased=False) #generate wireframe
 	
 	axs.set_title('Bezier Surface Plot')
@@ -105,6 +107,8 @@ def sphere():
 	axs.set_xlabel('X-axis')
 	axs.set_ylabel('Y-axis')
 	axs.set_zlabel('Z-axis')
+
+	legend = plt.legend()
 
 	plt.show()
 
