@@ -399,6 +399,9 @@ def parseFile(filename):
     faces = {n:list(map(int, face.split())) for n,face in enumerate(data[1+nv:])}
     return vertices,faces
 
+#####Refer to other two code files ####
+
+
 def circle(filename):
     """
     Parameters:
