@@ -53,16 +53,16 @@ def circle():
 
     points = {}
     #loading points 
-    for i in range(count[0]):
+    for j in range(count[0]):
         p = [i for i in mesh.readline().strip().split()]
-        points["P"+str(i)] = ControlPoint(p[0], p[1])
+        points["P"+str(j)] = ControlPoint(p[0], p[1])
 
     AllFaces = {}
     #loading faces
-    for i in range(count[1]):
+    for j in range(count[1]):
         #list containing ith face's control points
         f = [points["P"+i] for i in mesh.readline().strip().split()] 
-        AllFaces["F"+str(i)] = Face(f)
+        AllFaces["F"+str(j)] = Face(f)
     
     #Line Mesh
     x_t = []
