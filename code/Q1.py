@@ -103,7 +103,7 @@ def plotBezierBasisFunctions(type='curve',degree=1):
         degree : degree of bezier basis functions, degree = 1 for linear and so on
     Output:
         Plots the bezier basis functions for curves if type is curve
-        Plots the bezier basis functions for surfaces if type is surface
+        Plots the bezier basis functions for patches if type is surface
     """
     t = np.linspace(0,1,1000)
     if (type == 'curve'):
@@ -165,6 +165,14 @@ def plotBezierCurves(controlPoints,degree):
     plt.show()
 
 def cubicBezierCurvesJoinedWithContinuity(continuity = 'C-1', cpP=[[0,0],[0.5,1],[0.5,0],[1,1]], cpQ=[[1.5,1.5],[2,2.5],[2,1.5],[2.5,2.5]]):
+    """
+    Paramters:
+        controlPoints cpP: A 2D list of control points for curve P (example : [[x1,y1],[x2,y2], ... , [xn,yn]]
+        controlPoints cpQ: A 2D list of control points for curve Q (example : [[x1,y1],[x2,y2], ... , [xn,yn]]
+        continuity : a string to specify the desired continuity. 
+    Output:
+        Plots the bezier curves joined by desired continuity.
+    """
     cpP = np.array(cpP)
     cpQ = np.array(cpQ)
     cpPX , cpPY = cpP[:,0] , cpP[:,1]
@@ -241,21 +249,21 @@ def newBezierBasisToPassThroughCP(controlPoints,degree):
 def plotBezierSurfaces(controlPoints,degree):
     """
     Paramters:
-        controlPoints : A 2D list of control points (example : [[x1,y1],[x2,y2], ... , [xn,yn]]
+        controlPoints : A 3D list of control points (example : [[x1,y1,z1],[x2,y2,z2], ... , [xn,yn,zn]]
         degree : degree of bezier basis functions, degree = 1 for linear and so on
     Output:
-        Plots the bezier curve controlled by a control polygon and also draws the control points
+        Plots the bezier patch controlled by a control polygon and also draws the control points
     """
     if (len(controlPoints) != (degree +1)**2):
         raise ValueError('The number of control points should be (degree + 1)**2')
     controlPoints = np.array(controlPoints)
     cpX , cpY, cpZ = controlPoints[:,0] , controlPoints[:,1] , controlPoints[:,2]
-    t = np.linspace(0,1,10)
-    s = np.linspace(0,1,10)
+    t = np.linspace(0,1,20)
+    s = np.linspace(0,1,20)
     T, S = np.meshgrid(t, s)
     basisFunctions = getBezierSurfaceBasisFunctions(degree)
     fig = plt.figure()
-    ax = Axes3D(fig)
+    ax = ax = fig.gca(projection='3d')#Axes3D(fig)
     curve, i = 0,0
     for func in basisFunctions:
         curve += np.outer(eval(func,{'t':T,'s':S}),controlPoints[i])
@@ -276,10 +284,10 @@ def plotBezierSurfaces(controlPoints,degree):
 def newBezierSurfacesThroughCP(controlPoints,degree):
     """
     Paramters:
-        controlPoints : A 2D list of control points (example : [[x1,y1],[x2,y2], ... , [xn,yn]]
+        controlPoints : A 3D list of control points (example : [[x1,y1,z1],[x2,y2,z2], ... , [xn,yn,zn]]
         degree : degree of bezier basis functions. This function only accepts degrees which satisfy the inequality 2 <= degree <= 3
     Output:
-        Plots the bezier curve controlled by a control polygon such that the curve passes through these points, and also draws the control points
+        Plots the bezier patch controlled by a control polygon such that the curve passes through these points, and also draws the control points
     """
     if (len(controlPoints) != (degree +1)**2):
         raise ValueError('The number of control points should be (degree + 1)**2')
@@ -287,8 +295,8 @@ def newBezierSurfacesThroughCP(controlPoints,degree):
         raise ValueError('This function only works for quadratic and cubic bezier curves.')
     controlPoints = np.array(controlPoints)
     cpX , cpY, cpZ = controlPoints[:,0] , controlPoints[:,1] , controlPoints[:,2]
-    t = np.linspace(0,1,10)
-    s = np.linspace(0,1,10)
+    t = np.linspace(0,1,20)
+    s = np.linspace(0,1,20)
     T, S = np.meshgrid(t, s)
     if (degree == 2):
         basisFunctions = ['2*(1-s)*(0.5-s)*2*(1-t)*(0.5-t)','2*(1-s)*(0.5-s)*4*(1-t)*t','2*(1-s)*(0.5-s)*(-2)*t*(0.5-t)',
@@ -300,10 +308,10 @@ def newBezierSurfacesThroughCP(controlPoints,degree):
                           '(9/2)*(1-s)*((1/3)-s)*((2/3)-s)*(-27/2)*t*(1-t)*((1/3)-t)','(9/2)*(1-s)*((1/3)-s)*((2/3)-s)*(9/2)*t*((1/3)-t)*((2/3)-t)',
                           
                           '(27/2)*s*(1-s)*((2/3)-s)*(9/2)*(1-t)*((1/3)-t)*((2/3)-t)','(27/2)*s*(1-s)*((2/3)-s)*(27/2)*t*(1-t)*((2/3)-t)',
-                          '(27/2)*s*(1-s)*((2/3)-s)*(-27/2)*t*(1-t)*((1/3)-t)','(27/2)*s*(1-s)*((2/3)-s)*(9/2)*t*((1/3)-t)*((2/3)-t)'
+                          '(27/2)*s*(1-s)*((2/3)-s)*(-27/2)*t*(1-t)*((1/3)-t)','(27/2)*s*(1-s)*((2/3)-s)*(9/2)*t*((1/3)-t)*((2/3)-t)',
 
                           '(-27/2)*s*(1-s)*((1/3)-s)*(9/2)*(1-t)*((1/3)-t)*((2/3)-t)','(-27/2)*s*(1-s)*((1/3)-s)*(27/2)*t*(1-t)*((2/3)-t)',
-                          '(-27/2)*s*(1-s)*((1/3)-s)*(-27/2)*t*(1-t)*((1/3)-t)','(-27/2)*s*(1-s)*((1/3)-s)*(9/2)*t*((1/3)-t)*((2/3)-t)'
+                          '(-27/2)*s*(1-s)*((1/3)-s)*(-27/2)*t*(1-t)*((1/3)-t)','(-27/2)*s*(1-s)*((1/3)-s)*(9/2)*t*((1/3)-t)*((2/3)-t)',
 
                           '(9/2)*s*((1/3)-s)*((2/3)-s)*(9/2)*(1-t)*((1/3)-t)*((2/3)-t)','(9/2)*s*((1/3)-s)*((2/3)-s)*(27/2)*t*(1-t)*((2/3)-t)',
                           '(9/2)*s*((1/3)-s)*((2/3)-s)*(-27/2)*t*(1-t)*((1/3)-t)','(9/2)*s*((1/3)-s)*((2/3)-s)*(9/2)*t*((1/3)-t)*((2/3)-t)'
@@ -321,13 +329,69 @@ def newBezierSurfacesThroughCP(controlPoints,degree):
     ax.plot(cpX,cpY,cpZ,'--og' , label = "Control Points")
     for i in range(len(cpX)):
         ax.text(cpX[i],cpY[i],cpZ[i],"P"+str(i),horizontalalignment='left',verticalalignment='top') 
-    plt.title("Bezier surface for degree " + str(degree))
+    plt.title("Bezier surface through control points for degree " + str(degree))
+    ax.legend()
+    plt.xlabel('t')
+    plt.ylabel('s')
+    plt.show()
+
+def quadraticBezierPatchesJoinedWithContinuity(continuity = 'C-1',cpP=[[0,0,10],[3,0,-10],[6,0,0],[0,3,12],[3,3,0],[6,3,0],[0,6,0],[3,6,4],[6,6,0]],cpQ=[[10,10,10], [13,10,-10], [16,10,0], [10,13,12], [13,13,0], [16,13,0], [10,16,0], [13,16,4],[16,16,0]]):
+    """
+    Paramters:
+        controlPoints cpP: A 3D list of control points for patch P (example : [[x1,y1,z1],[x2,y2,z2], ... , [xn,yn,zn]]
+        controlPoints cpQ: A 3D list of control points for patch Q (example : [[x1,y1,z1],[x2,y2,z2], ... , [xn,yn,zn]]
+        continuity : a string to specify the desired continuity. 
+    Output:
+        Plots the bezier patches joined by desired continuity.
+    """
+    cpP = np.array(cpP)
+    cpQ = np.array(cpQ)
+    cpPX , cpPY , cpPZ = cpP[:,0] , cpP[:,1] , cpP[:,2]
+    cpQX , cpQY , cpQZ = cpQ[:,0] , cpQ[:,1] , cpQ[:,2]
+    t = np.linspace(0,1,10)
+    s = np.linspace(0,1,10)
+    T, S = np.meshgrid(t, s)
+    basisFunctions = getBezierSurfaceBasisFunctions(2)
+    fig = plt.figure()
+    ax = ax = fig.gca(projection='3d')
+    curveP, curveQ, i = 0,0,0
+    if (continuity == 'C0'):
+        cpQ[0] = cpP[-3]
+        cpQ[1] = cpP[-2]
+        cpQ[2] = cpP[-1]
+    elif (continuity == 'C1'):
+        cpQ[0] = cpP[-3]
+        cpQ[1] = cpP[-2]
+        cpQ[2] = cpP[-1]
+        cpQ[3] = cpP[-1] + cpP[-3] - cpP[-4]
+    for func in basisFunctions:
+        curveP += np.outer(eval(func,{'t':T,'s':S}),cpP[i])
+        curveQ += np.outer(eval(func,{'t':T,'s':S}),cpQ[i])
+        i += 1
+    curvePX , curvePY , curvePZ = curveP[:,0] , curveP[:,1] , curveP[:,2]
+    curveQX , curveQY , curveQZ = curveQ[:,0] , curveQ[:,1] , curveQ[:,2]
+
+    c = ax.plot_trisurf(curvePX,curvePY, curvePZ, label = "Bezier surface P(s,t)")
+    c._facecolors2d=c._facecolors3d
+    c._edgecolors2d=c._edgecolors3d
+
+    c = ax.plot_trisurf(curveQX,curveQY, curveQZ, label = "Bezier surface Q(s,t)")
+    c._facecolors2d=c._facecolors3d
+    c._edgecolors2d=c._edgecolors3d
+    plt.title("Quadratic Bezier curves with " + continuity + " continuity")
     ax.legend()
     plt.xlabel('t')
     plt.ylabel('s')
     plt.show()
 
 def parseFile(filename):
+    """
+    Parameters:
+        filename: .txt file to read
+    Output:
+        vertices: numpy array containing vertices for example [[0.93,1.993],[8.34,4.44]]
+        faces: dictionary of faces containing list of vertices as values, for example {0:[0,1,2],1:[3,4,5]}
+    """
     file = open(filename,"r")
     data = file.readlines()
     nv,nf = [int(s) for s in data[0].split() if s.isdigit()]
@@ -336,6 +400,12 @@ def parseFile(filename):
     return vertices,faces
 
 def circle(filename):
+    """
+    Parameters:
+        filename: .txt file to read
+    Output:
+        Plots the approximated circle.
+    """
     vertices,faces = parseFile(filename)
     vX , vY = vertices[:,0] , vertices[:,1]
     t = np.linspace(0,1,1000)
@@ -356,16 +426,70 @@ def circle(filename):
     plt.legend()
     plt.show()
 
+def sphere(filename):
+    """
+    Parameters:
+        filename: .txt file to read
+    Output:
+        Plots the approximated sphere.
+    """
+    vertices,faces = parseFile(filename)
+    vX , vY, vZ = vertices[:,0] , vertices[:,1] , vertices[:,2]
+    t = np.linspace(0,1,10)
+    s = np.linspace(0,1,10)
+    T, S = np.meshgrid(t, s)
+    basisFunctions = getBezierSurfaceBasisFunctions(2)
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    x , y , z = 0,0,0
+    for nFace,lFace in faces.items():
+        curve,i = 0, 0
+        for func in basisFunctions:
+            curve += np.outer(eval(func,{'t':T,'s':S}),vertices[lFace[i]])
+            i += 1
+        curveX , curveY , curveZ = curve[:,0] , curve[:,1] , curve[:,2]
+        x = np.append(x,curveX)
+        y = np.append(y,curveY)
+        z = np.append(z,curveZ)
+    c = ax.plot_trisurf(x,y, z)
+    
+    ax.plot(vX,vY,vZ,'og' , label = "Control Points")
+    plt.title("Bezier curves for 2")
+    plt.xlabel('x-axis')
+    plt.ylabel('y-axis')
+    plt.grid(alpha=.4,linestyle='--')
+    plt.show()
+
+
 knot_vector = [0,1,2,3,4,5,6]
 #plotBsplineBasisFunctions(knot_vector,5)         
 #plotBezierBasisFunctions(type='curve',degree=2)
 #plotBezierBasisFunctions(type='surface',degree=1)
-d = {2: [[1,2],[0,0],[2,0]], 1:[[0,0],[0.5,1]],3:[[0,0],[0.5,1],[0.5,0],[1,1]],4:[[0,0],[1,0],[1,1],[0,1],[0.5,2]]}   
-#plotBezierCurves(d[2],2)    
-#newBezierBasisToPassThroughCP(d[2],2)
-p = [[0,0,10],[3,0,-10],[6,0,0],[0,3,12],[3,3,0],[6,3,0],[0,6,0],[3,6,4],[6,6,0]]
-q = [[0,0,0],[3,0,0],[0,3,0],[3,3,0]]
-#plotBezierSurfaces(p,2)
+curveCP = {1:[[0,0],[0.5,1]], 2: [[1,2],[0,0],[2,0]],3:[[0,0],[0.5,1],[0.5,0],[1,1]],4:[[0,0],[1,0],[1,1],[0,1],[0.5,2]]}   
+#plotBezierCurves(curveCP[2],2)    
+#newBezierBasisToPassThroughCP(curveCP[3],3)
+#w = [[0,0,0],[3,0,0],[6,0,0],[0,3,0],[3,3,0],[6,3,0],[0,6,0],[3,6,0],[6,6,0]]
+#c = [[0,1.5,1.5],[0,1.84,0.76],[0,1.38,0.57],[0,1,1],[0,1.5,1],[0,1.6,0.6],[0,1.2,0.81],[0,1.2,1.2],[0,1.44,0.96]]
+#d = [[0.38393,0,10.3999],[3,0,-10.8383],[6.393994,0,0],[0,3,12],[3,3.39993,0],[6,3.3993,0],[0,6,0],[3,6,4],[6,6,0]]
+patchCP = {2:[[0,0,10],[3,0,-10],[6,0,0],[0,3,12],[3,3,0],[6,3,0],[0,6,0],[3,6,4],[6,6,0]],
+           1 : [[0,0,0],[3,0,0],[0,3,0],[3,3,0]],
+           3: [[0,0,0], [1,0,2], [2,0,-1],[3,0,0],
+                 [0,1,0], [1,1,4], [2,1,4], [3,1,0],
+                 [0,2,0], [1,2,8], [2,2,8],  [3,2,0],
+                 [0,3,0], [1,3,0], [2,3,0], [3,3,0]],
+           4: [[0,0,0], [1,0,2], [2,0,-1],[3,0,0],
+                 [0,1,0], [1,1,4], [2,1,4], [3,1,4], [3,2,4], [3,1,0],
+                 [0,2,0], [1,2,8], [2,2,8], [2,4,8], [4,2,8],  [3,2,0],
+                 [0,3,0], [1,3,0], [2,3,0], [3,3,0], [3,2,1],
+                 [0,3,1], [1,3,1], [2,3,1], [3,3,1]
+           ]}
+#plotBezierSurfaces(w,2)
 #newBezierSurfacesThroughCP(p,2)
 #cubicBezierCurvesJoinedWithContinuity(continuity = 'C2',cpP = [[0,0],[0.5,1],[0.5,0],[1,1]],cpQ = [[1.5,1.5],[2,2.5],[2,1.5],[2.5,2.5]])
-circle("../resources/circle.txt")
+#circle("../resources/circle.txt")
+#sphere("../resources/sphere.txt")
+#plotBezierSurfaces(patchCP[4],4)
+#newBezierSurfacesThroughCP(patchCP[3],3)
+cpP = [[0,0,10],[3,0,-10],[6,0,0],[0,3,12],[3,3,0],[6,3,0],[0,6,0],[3,6,4],[6,6,0]]
+cpQ = [[10,10,10], [13,10,-10], [16,10,0], [10,13,12], [13,13,0], [16,13,0], [10,16,0], [13,16,4],[16,16,0]]
+#quadraticBezierPatchesJoinedWithContinuity(continuity='C1',cpP=cpP,cpQ=cpQ)
