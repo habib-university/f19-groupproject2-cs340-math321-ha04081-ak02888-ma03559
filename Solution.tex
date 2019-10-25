@@ -375,6 +375,13 @@ For cubic, replace (for both $s$ and $t$):
     \item \textbf{(2 points)} Consider two arbitrary tensor product quadratic B\'{e}zier patches $\vec P(s,t)$ and $\vec Q(s,t)$, describe (qualitatively or mathematically) the conditions for $C^1$ continuity along the edge at which they meet?
     \subsection*{Solution}
     \underline{Assumption}: Let we are limiting our problem such that the patches meet at one boundary. \\ \\
+    We have taken the points in the following order, assuming $t$ on the vertical axis, and $s$ on the horizontal axis. 
+    \begin{align*}
+        P_{2,0} , P_{2,1},  P_{2,2} \\ 
+        P_{1,0} , P_{1,1},  P_{1,2} \\ 
+        P_{0,0} , P_{0,1},  P_{0,2} \\
+    \end{align*}
+    The same alignment is assumed for control points of patch \(Q(s,t)\). \\ \\
     The equations for quadratic bezier patches \(P(s,t)\) and \(Q(s,t)\) can be written as:
     \begin{multline}
     \label{eq:p(s,t)}
